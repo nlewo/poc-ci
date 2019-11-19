@@ -1,0 +1,32 @@
+{{ if .Values.withGatekeeperConstraintsCRDs }}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: ciRules
+metadata:
+  name: cirules
+  annotations:
+    kapp.k14s.io/change-rule: "delete before deleting ci/gatekeeper-config"
+    kapp.k14s.io/change-rule: "upsert after upserting ci/gatekeeper-config"
+
+spec:
+  match:
+    kinds:
+    - apiGroups:
+      - ""
+      kinds:
+      - Namespace
+      - Role
+    - apiGroups:
+      - rbac.authorization.k8s.io
+      kinds:
+      - RoleBinding
+    - apiGroups:
+      - tekton.dev
+      kinds:
+      - Task
+      - ClusterTask
+      - TaskRun
+      - PipelineRun
+      - Pipeline
+      - PipelineResource
+      - Condition
+{{ end }}
