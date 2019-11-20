@@ -1,1 +1,1 @@
-helm template . | kapp deploy -a stargate -y -f -
+helm template . --values values-ingress.yaml | kapp deploy -a stargate -y -f -
