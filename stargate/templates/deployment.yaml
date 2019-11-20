@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "stargate.fullname" . }}
+  labels:
+{{ include "stargate.labels" . | indent 4 }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "stargate.name" . }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "stargate.name" . }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: stargate
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: GITHUB_SECRET_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: stargate-github-secret
+                  key: token
+            - name: GITLAB_SECRET_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: stargate-gitlab-secret
+                  key: token
+            - name: STARGATE_MODULES_PATH
+              value: /modules
+            {{- if .Values.debug }}
+            - name: STARGATE_DEBUG
+              value: "1"
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: stargate-modules
+              mountPath: /modules
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: stargate-modules
+          configMap:
+            name: {{ include "stargate.fullname" . }}-modules
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "stargate.fullname" . }}-modules
+  labels:
+{{ include "stargate.labels" . | indent 4 }}
+  namespace: {{ .Values.namespace }}
+data:
+  webhooks.rego: |
+{{ .Files.Get "modules/webhooks.rego" | indent 4}}
