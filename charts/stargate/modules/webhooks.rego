@@ -115,7 +115,7 @@ resources[r] {
       "spec": {
         "serviceAccount": saName,
         "taskRef": {
-          "name": "ci-stage2-ng"
+          "name": "ci-stage2"
         },
         "inputs": {
           "params": [

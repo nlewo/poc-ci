@@ -1,0 +1,14 @@
+# This role allows the stage3 to get logs of the stage2 taskrun
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tekton-ci-stage2-read
+rules:
+- apiGroups:
+  - tekton.dev
+  resources:
+  - taskruns
+  verbs:
+  - get
+  - watch
+---
