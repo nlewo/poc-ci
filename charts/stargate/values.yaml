@@ -15,7 +15,7 @@ githubSecret: 12345
 
 image:
   repository: eonpatapon/stargate-44fb639d0f8662006ac8589da0d5db3d@sha256
-  tag: ef6e93c4e43b9179d261c0138d6b6fa781efd0963399ba8061da8b47b244400a
+  tag: 38079d5cec209daab06a1b478e578c75e5383ccaec9865ce8a92ba51a8b04f4c
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []

@@ -6,7 +6,7 @@ event = e {
   e := {
     "eventType": "pull_request",
     "eventAction": input.payload.action,
-    "eventUUID": input.headers["X-GitHub-Delivery"][0],
+    "eventUUID": input.headers["X-Stargate-Request-ID"][0],
     "repository": {
       "id": sprintf("pr-%d", [input.payload.pull_request.number]),
       "name": repo,
@@ -25,7 +25,7 @@ event = e {
   e := {
     "eventType": "push",
     "eventAction": "push",
-    "eventUUID": input.headers["X-GitHub-Delivery"][0],
+    "eventUUID": input.headers["X-Stargate-Request-ID"][0],
     "repository": {
       "id": branch,
       "name": repo,
@@ -33,6 +33,44 @@ event = e {
       "revision": input.payload.head_commit.id,
       "branch": branch,
       "fullName": input.payload.repository.full_name,
+    }
+  }
+}
+
+event = e {
+  input.headers["X-Gitlab-Event"][_] = "Push Hook"
+  repo = lower(input.payload.project.name)
+  branch = trim_prefix(input.payload.ref, "refs/heads/")
+  e := {
+    "eventType": "push",
+    "eventAction": "push",
+    "eventUUID": input.headers["X-Stargate-Request-ID"][0],
+    "repository": {
+      "id": branch,
+      "name": repo,
+      "url": input.payload.repository.git_http_url,
+      "revision": input.payload.checkout_sha,
+      "branch": branch,
+      "fullName": input.payload.project.path_with_namespace
+    }
+  }
+}
+
+event = e {
+  input.headers["X-Gitlab-Event"][_] = "Merge Request Hook"
+  repo = lower(input.payload.project.name)
+  branch = input.payload.object_attributes.source_branch
+  e := {
+    "eventType": "pull_request",
+    "eventAction": input.payload.object_attributes.state,
+    "eventUUID": input.headers["X-Stargate-Request-ID"][0],
+    "repository": {
+      "id": sprintf("pr-%d", [input.payload.object_attributes.id]),
+      "name": repo,
+      "url": input.payload.object_attributes.source.git_http_url,
+      "revision": input.payload.object_attributes.last_commit.id,
+      "branch": branch,
+      "fullName": input.payload.object_attributes.source.path_with_namespace
     }
   }
 }
@@ -47,6 +85,10 @@ run_stage1 {
   event.eventAction = "synchronized" # github
 }
 run_stage1 {
+  event.eventType = "pull_request"
+  event.eventAction = "updated" # gitlab
+}
+run_stage1 {
   event.eventType = "push"
   event.repository.branch = "master"
 }
@@ -57,7 +99,7 @@ superuser {
   event.repository.branch = "master"
 }
 
-default t = false
+default r = []
 resources[r] {
   run_stage1
   saName = sprintf("ci-%s-%s", [event.repository.name, event.repository.id])
