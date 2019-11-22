@@ -1,5 +1,16 @@
 package webhooks
 
+# https://github.com/open-policy-agent/opa/issues/1588
+# merge a and b to produce c. b's values override a's values.
+merge(a, b) = c {
+  keys := {k | some k; _ = a[k]} | {k | some k; _ = b[k]}
+  c := {k: v | k := keys[_]; v := pick(k, b, a)}
+}
+# return k from first obj that contains it.
+pick(k, obj1, _) = obj1[k]
+pick(k, obj1, obj2) = obj2[k] { not exists(obj1, k) }
+exists(obj, k) { _ = obj[k] }
+
 event = e {
   input.headers["X-Github-Event"][_] = "pull_request"
   repo = lower(input.payload.repository.name)
@@ -99,6 +110,10 @@ superuser {
   event.repository.branch = "master"
 }
 
+event_stage1 = e {
+  e := merge(event, {"namespace": sprintf("ci-%s-%s", [event.repository.name, event.repository.id])})
+}
+
 default r = []
 resources[r] {
   run_stage1
@@ -161,7 +176,7 @@ resources[r] {
         },
         "inputs": {
           "params": [
-            { "name": "event", "value": json.marshal(event) },
+            { "name": "event", "value": json.marshal(event_stage1) },
             { "name": "repoName", "value": event.repository.name },
             { "name": "repoID", "value": event.repository.id }
           ],
