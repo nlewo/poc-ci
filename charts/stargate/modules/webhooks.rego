@@ -93,7 +93,7 @@ run_stage1 {
 }
 run_stage1 {
   event.eventType = "pull_request"
-  event.eventAction = "synchronized" # github
+  event.eventAction = "synchronize" # github
 }
 run_stage1 {
   event.eventType = "pull_request"
