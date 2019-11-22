@@ -140,7 +140,7 @@ github_push(branch) = event {
     },
     "headers": {
       "X-Github-Event": ["push"],
-      "X-Stargate-Request-ID": ["967d8788-9426-4c5c-9909-458f41177bbe"]
+      "X-Stargate-Request-Id": ["967d8788-9426-4c5c-9909-458f41177bbe"]
     }
   }
 }
@@ -603,7 +603,7 @@ github_pull_request(action) = event {
     },
     "headers": {
         "X-Github-Event": ["pull_request"],
-        "X-Stargate-Request-ID": ["967d8788-9426-4c5c-9909-458f41177bbe"]
+        "X-Stargate-Request-Id": ["967d8788-9426-4c5c-9909-458f41177bbe"]
     }
   }
 }

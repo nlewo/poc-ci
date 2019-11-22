@@ -72,7 +72,7 @@ gitlab_push(branch) = event {
     },
     "headers": {
       "X-Gitlab-Event": ["Push Hook"],
-      "X-Stargate-Request-ID": ["967d8788-9426-4c5c-9909-458f41177bbe"]
+      "X-Stargate-Request-Id": ["967d8788-9426-4c5c-9909-458f41177bbe"]
     },
   }
 }
@@ -227,7 +227,7 @@ gitlab_merge_request(action) = event {
     },
     "headers": {
 	  "X-Gitlab-Event": ["Merge Request Hook"],
-      "X-Stargate-Request-ID": ["967d8788-9426-4c5c-9909-458f41177bbe"]
+      "X-Stargate-Request-Id": ["967d8788-9426-4c5c-9909-458f41177bbe"]
     }
   }
 }

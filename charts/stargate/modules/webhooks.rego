@@ -17,7 +17,7 @@ event = e {
   e := {
     "eventType": "pull_request",
     "eventAction": input.payload.action,
-    "eventUUID": input.headers["X-Stargate-Request-ID"][0],
+    "eventUUID": input.headers["X-Stargate-Request-Id"][0],
     "repository": {
       "id": sprintf("pr-%d", [input.payload.pull_request.number]),
       "name": repo,
@@ -36,7 +36,7 @@ event = e {
   e := {
     "eventType": "push",
     "eventAction": "push",
-    "eventUUID": input.headers["X-Stargate-Request-ID"][0],
+    "eventUUID": input.headers["X-Stargate-Request-Id"][0],
     "repository": {
       "id": branch,
       "name": repo,
@@ -55,7 +55,7 @@ event = e {
   e := {
     "eventType": "push",
     "eventAction": "push",
-    "eventUUID": input.headers["X-Stargate-Request-ID"][0],
+    "eventUUID": input.headers["X-Stargate-Request-Id"][0],
     "repository": {
       "id": branch,
       "name": repo,
@@ -74,7 +74,7 @@ event = e {
   e := {
     "eventType": "pull_request",
     "eventAction": input.payload.object_attributes.state,
-    "eventUUID": input.headers["X-Stargate-Request-ID"][0],
+    "eventUUID": input.headers["X-Stargate-Request-Id"][0],
     "repository": {
       "id": sprintf("pr-%d", [input.payload.object_attributes.id]),
       "name": repo,
