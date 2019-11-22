@@ -1,11 +1,10 @@
 apiVersion: tekton.dev/v1alpha1
-kind: Task
+kind: ClusterTask
 metadata:
   annotations:
     # To ignore failed taskruns when kapp redeploy this task
     kapp.k14s.io/disable-associated-resources-wait: ""
   name: ci-stage2
-  namespace: tekton-pipelines
 spec:
   inputs:
     params:
