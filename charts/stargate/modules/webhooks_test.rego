@@ -30,7 +30,7 @@ test_gitlab_merge_request_opened_event {
 	ts[_][_].spec.taskRef.name = "ci-stage2"
 }
 
-test_github_pull_request_synchronized_event {
+test_github_pull_request_synchronize_event {
 	ts = resources with input as github_pull_request("synchronize")
 	ts[_][_].spec.taskRef.name = "ci-stage2"
 }

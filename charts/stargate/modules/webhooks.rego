@@ -14,6 +14,7 @@ exists(obj, k) { _ = obj[k] }
 event = e {
   input.headers["X-Github-Event"][_] = "pull_request"
   repo = lower(input.payload.repository.name)
+  namespace = split(lower(input.payload.repository.full_name), "/")
   e := {
     "eventType": "pull_request",
     "eventAction": input.payload.action,
@@ -21,10 +22,11 @@ event = e {
     "repository": {
       "id": sprintf("pr-%d", [input.payload.pull_request.number]),
       "name": repo,
+      "namespace": namespace[0],
+      "fullName": lower(input.payload.repository.full_name),
       "url": input.payload.pull_request.head.repo.clone_url,
       "revision": input.payload.pull_request.head.sha,
       "branch": input.payload.pull_request.head.ref,
-      "fullName": input.payload.repository.full_name,
     }
   }
 }
@@ -32,6 +34,7 @@ event = e {
 event = e {
   input.headers["X-Github-Event"][_] = "push"
   repo = lower(input.payload.repository.name)
+  namespace = lower(input.payload.repository.owner.name)
   branch = trim_prefix(input.payload.ref, "refs/heads/")
   e := {
     "eventType": "push",
@@ -40,10 +43,11 @@ event = e {
     "repository": {
       "id": branch,
       "name": repo,
+      "namespace": namespace,
+      "fullName": lower(input.payload.repository.full_name),
       "url": input.payload.repository.clone_url,
       "revision": input.payload.head_commit.id,
       "branch": branch,
-      "fullName": input.payload.repository.full_name,
     }
   }
 }
@@ -51,6 +55,7 @@ event = e {
 event = e {
   input.headers["X-Gitlab-Event"][_] = "Push Hook"
   repo = lower(input.payload.project.name)
+  namespace = lower(input.payload.project.namespace)
   branch = trim_prefix(input.payload.ref, "refs/heads/")
   e := {
     "eventType": "push",
@@ -59,10 +64,11 @@ event = e {
     "repository": {
       "id": branch,
       "name": repo,
+      "namespace": namespace,
+      "fullName": lower(input.payload.project.path_with_namespace),
       "url": input.payload.repository.git_http_url,
       "revision": input.payload.checkout_sha,
       "branch": branch,
-      "fullName": input.payload.project.path_with_namespace
     }
   }
 }
@@ -70,6 +76,7 @@ event = e {
 event = e {
   input.headers["X-Gitlab-Event"][_] = "Merge Request Hook"
   repo = lower(input.payload.project.name)
+  namespace = lower(input.payload.project.namespace)
   branch = input.payload.object_attributes.source_branch
   e := {
     "eventType": "pull_request",
@@ -78,10 +85,11 @@ event = e {
     "repository": {
       "id": sprintf("pr-%d", [input.payload.object_attributes.id]),
       "name": repo,
+      "namespace": namespace,
+      "fullName": lower(input.payload.object_attributes.source.path_with_namespace),
       "url": input.payload.object_attributes.source.git_http_url,
       "revision": input.payload.object_attributes.last_commit.id,
       "branch": branch,
-      "fullName": input.payload.object_attributes.source.path_with_namespace
     }
   }
 }
