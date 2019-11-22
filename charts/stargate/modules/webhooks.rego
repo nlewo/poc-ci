@@ -172,6 +172,7 @@ resources[r] {
       "spec": {
         "serviceAccount": saName,
         "taskRef": {
+          "kind": "ClusterTask",
           "name": "ci-stage2"
         },
         "inputs": {
